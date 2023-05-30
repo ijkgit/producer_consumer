@@ -5,3 +5,12 @@
     max-height: 200px;
     overflow-y: scroll;
   }
+  .log-entry {
+    animation: fadeOut 2s ease-in-out;
+  }
+
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+  }

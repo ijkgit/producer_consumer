@@ -35,7 +35,7 @@ function updateVariableInfo() {
 }
 
 function produce() {
-  if (mutexC == 1 && mutexP === 1 && nrempty !== 0) {
+  if (mutexC === 1 && mutexP === 1 && nrempty !== 0) {
     mutexP = 0;
     logToConsole("Producer mutex locked");
     logToConsole("Producer is producing");
@@ -65,7 +65,7 @@ function produce() {
 
 
 function consume() {
-  if (mutexP == 1 && mutexC === 1 && nrfull !== 0) {
+  if (mutexP === 1 && mutexC === 1 && nrfull !== 0) {
     mutexC = 0;
     logToConsole("Consumer mutex locked");
     logToConsole("Consumer is consuming");
@@ -94,14 +94,13 @@ function consume() {
 
 function logToConsole(message) {
   const logElement = document.getElementById("log");
-        const entryElement = document.createElement("p");
-        entryElement.textContent = message;
-        entryElement.classList.add("log-entry");
-        logElement.appendChild(entryElement);
-
-        setTimeout(function() {
-          logElement.removeChild(entryElement);
-        }, 2000); // 2초 후에 로그를 삭제
+  const entryElement = document.createElement("p");
+  entryElement.textContent = message;
+  entryElement.classList.add("log-entry");
+  logElement.appendChild(entryElement);
+  setTimeout(function() {
+    logElement.removeChild(entryElement);
+  }, 2000); // 2초 후에 로그를 삭제
 }
 
 function updateBufferInfo() {
