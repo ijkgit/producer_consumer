@@ -7,6 +7,12 @@ let mutexC = 1; // 소비자 뮤텍스
 let nrfull = 0; // 버퍼가 가득 찬 횟수
 let nrempty = bufferSize; // 버퍼가 비어있는 횟수
 
+setInterval(() => {
+  // 상태 확인 및 업데이트하는 코드 작성
+  updateVariableInfo();
+  updateBufferInfo();
+}, 100); // 1초마다 실행
+
 function startProducerConsumer() {
   bufferSize = parseInt(document.getElementById("buffer-size").value);
   buffer = new Array(bufferSize).fill(undefined);
@@ -29,7 +35,7 @@ function updateVariableInfo() {
 }
 
 function produce() {
-  if (mutexP === 1 && nrempty !== 0) {
+  if (mutexC == 1 && mutexP === 1 && nrempty !== 0) {
     mutexP = 0;
     logToConsole("Producer mutex locked");
     logToConsole("Producer is producing");
@@ -47,7 +53,7 @@ function produce() {
     setTimeout(() => {
       mutexP = 1;
       logToConsole("Producer mutex re-enabled");
-    }, 1000); // 1초 후 생산자 뮤텍스 재활성화
+    }, 2000); // 1초 후 생산자 뮤텍스 재활성화
   } else {
     logToConsole("Buffer is full or producer is waiting...");
   }
@@ -56,8 +62,10 @@ function produce() {
   updateBufferInfo();
 }
 
+
+
 function consume() {
-  if (mutexC === 1 && nrfull !== 0) {
+  if (mutexP == 1 && mutexC === 1 && nrfull !== 0) {
     mutexC = 0;
     logToConsole("Consumer mutex locked");
     logToConsole("Consumer is consuming");
@@ -75,7 +83,7 @@ function consume() {
     setTimeout(() => {
       mutexC = 1;
       logToConsole("Consumer mutex re-enabled");
-    }, 1000); // 1초 후 소비자 뮤텍스 재활성화
+    }, 2000); // 1초 후 소비자 뮤텍스 재활성화
   } else {
     logToConsole("Buffer is empty or consumer is waiting...");
   }
@@ -85,9 +93,15 @@ function consume() {
 }
 
 function logToConsole(message) {
-  const consoleBox = document.getElementById("console-log");
-  consoleBox.innerHTML += `<p>${message}</p>`;
-  consoleBox.scrollTop = consoleBox.scrollHeight;
+  const logElement = document.getElementById("log");
+        const entryElement = document.createElement("p");
+        entryElement.textContent = message;
+        entryElement.classList.add("log-entry");
+        logElement.appendChild(entryElement);
+
+        setTimeout(function() {
+          logElement.removeChild(entryElement);
+        }, 2000); // 2초 후에 로그를 삭제
 }
 
 function updateBufferInfo() {
