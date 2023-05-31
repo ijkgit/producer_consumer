@@ -62,11 +62,62 @@ input { border: 1px solid #666; background: #333; color: #fff; padding: 0.5em; b
   height: 30px;
 }
 .progress-wrap {
-  background: #f80;
+  background: #FF9F1E;
   margin: 20px 0;
   overflow: hidden;
   position: relative;
   .progress-bar {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.progress2 {
+  width: 100%;
+  height: 30px;
+}
+.progress-wrap2 {
+  background: #FF9F1E;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+  .progress-bar2 {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.progress3 {
+  width: 100%;
+  height: 30px;
+}
+.progress-wrap3 {
+  background: #FF9F1E;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+  .progress-bar3 {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.progress4 {
+  width: 100%;
+  height: 30px;
+}
+.progress-wrap4 {
+  background: #FF9F1E;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+  .progress-bar4 {
     background: #ddd;
     left: 0;
     position: absolute;

@@ -30,6 +30,13 @@ function startProducerConsumer() {
   nrfull = 0;
   inIndex = 0;
   outIndex = 0;
+  updateVariableInfo();
+  updateBufferInfo();
+  updateQueueImage();
+  moveProgressBar();
+  moveProgressBarForEmpty();
+  moveProgressBarForMutexP();
+  moveProgressBarForMutexC();
 }
 
 function updateVariableInfo() {
@@ -44,19 +51,22 @@ function updateVariableInfo() {
 
 function lockMutexP() {
   mutexP = 0;
-  logToConsole("Producer mutex locked");
+  moveProgressBarForMutexP();
 }
 
 function unlockMutexP() {
   mutexP = 1;
+  moveProgressBarForMutexP();
 }
 
 function lockMutexC() {
   mutexC = 0;
+  moveProgressBarForMutexC();
 }
 
-function unlockMutexC() {
+function unlockMutexC() {  
   mutexC = 1;
+  moveProgressBarForMutexC();
 }
 
 function produceProcess() {
@@ -192,6 +202,13 @@ function updateQueueImage() {
 
 // on page load...
 moveProgressBar();
+updateVariableInfo();
+updateBufferInfo();
+updateQueueImage();
+moveProgressBar();
+moveProgressBarForEmpty();
+moveProgressBarForMutexP();
+moveProgressBarForMutexC();
 // on browser resize...
 $(window).resize(function() {
     moveProgressBar();
@@ -205,7 +222,6 @@ function moveProgressBar() {
     var progressTotal = getPercent * getProgressWrapWidth;
     var animationLength = 1000;
     logToConsole(progressTotal);
-    logToConsole(getPercent);
     // on page load, animate percentage bar to data percentage length
     // .stop() used to prevent animation queueing
     $('.progress-bar').stop().animate({
@@ -217,14 +233,44 @@ function moveProgressBar() {
 function moveProgressBarForEmpty() {
   var getPercent = (100-percent)/100;
   // var getProgressWrapWidth = $('.progress-wrap').width();
-  var getProgressWrapWidth = $('.progress-wrap').width();
+  var getProgressWrapWidth = $('.progress-wrap2').width();
   var progressTotal = getPercent * getProgressWrapWidth;
   var animationLength = 1000;
+
   logToConsole(progressTotal);
-  logToConsole(getPercent);
   // on page load, animate percentage bar to data percentage length
   // .stop() used to prevent animation queueing
-  $('.progress-bar').stop().animate({
+  $('.progress-bar2').stop().animate({
+      left: progressTotal
+  }, animationLength);
+}
+
+// SIGNATURE PROGRESS
+function moveProgressBarForMutexP() {
+  var getPercent = mutexP;
+  var getProgressWrapWidth = $('.progress-wrap3').width();
+  var progressTotal = getPercent * getProgressWrapWidth;
+  var animationLength = 1000;
+
+  logToConsole(progressTotal);
+  // on page load, animate percentage bar to data percentage length
+  // .stop() used to prevent animation queueing
+  $('.progress-bar3').stop().animate({
+      left: progressTotal
+  }, animationLength);
+}
+
+// SIGNATURE PROGRESS
+function moveProgressBarForMutexC() {
+  var getPercent = mutexC;
+  var getProgressWrapWidth = $('.progress-wrap4').width();
+  var progressTotal = getPercent * getProgressWrapWidth;
+  var animationLength = 1000;
+
+  logToConsole(progressTotal);
+  // on page load, animate percentage bar to data percentage length
+  // .stop() used to prevent animation queueing
+  $('.progress-bar4').stop().animate({
       left: progressTotal
   }, animationLength);
 }
