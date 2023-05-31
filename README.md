@@ -20,4 +20,6 @@ The core part of the producer-consumer problem, including the logic, can be foun
 
 ![image](https://github.com/ijkgit/producer_consumer/assets/83939775/5479d3bc-6797-413d-bc24-c17969497b25)
 
-The remaining code is related to the UI. Please note that there is a bug where the output is not displayed correctly after the buffer completes one cycle. This is an area for future improvement. I hope this clarifies the details.
+The remaining code is related to the UI. 
+
+** Please note ** that there is a bug where the output is not displayed correctly after the buffer completes one cycle. ** This is an area for future improvement. I hope this clarifies the details.
