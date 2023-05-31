@@ -110,9 +110,9 @@ async function produce() {
   if (mutexP === 1) {
     lockMutexP();
     if (nrempty !== 0) {
-      if (criticalSection[outIndex] !== 0) {
+      if (criticalSection[outIndex-1] !== 0) {
         logToConsole("Producer start producing");
-        criticalSection[inIndex-1] = 0;
+        criticalSection[inIndex] = 0;
         await sleep(1500);
         produceProcess();
         await sleep(1500);
