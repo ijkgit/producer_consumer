@@ -8,7 +8,7 @@ let nrfull = 0; // 버퍼가 가득 찬 횟수
 let nrempty = bufferSize; // 버퍼가 비어있는 횟수
 let criticalSection = [];
 let percent = 0;
-const MAX_LOG_LINES = 2; // 최대 표시할 로그 줄 수
+const MAX_LOG_LINES = 1; // 최대 표시할 로그 줄 수
 const logLines = []; // 로그 줄을 저장할 배열
 
 function sleep(ms) {
@@ -33,10 +33,16 @@ function startProducerConsumer() {
   updateVariableInfo();
   updateBufferInfo();
   updateQueueImage();
+  updateProgressBar();
+}
+
+function updateProgressBar() {
   moveProgressBar();
   moveProgressBarForEmpty();
   moveProgressBarForMutexP();
   moveProgressBarForMutexC();
+  moveProgressBarForIn();
+  moveProgressBarForOut();
 }
 
 function updateVariableInfo() {
@@ -51,22 +57,22 @@ function updateVariableInfo() {
 
 function lockMutexP() {
   mutexP = 0;
-  moveProgressBarForMutexP();
+  updateProgressBar();
 }
 
 function unlockMutexP() {
   mutexP = 1;
-  moveProgressBarForMutexP();
+  updateProgressBar();
 }
 
 function lockMutexC() {
   mutexC = 0;
-  moveProgressBarForMutexC();
+  updateProgressBar();
 }
 
 function unlockMutexC() {  
   mutexC = 1;
-  moveProgressBarForMutexC();
+  updateProgressBar();
 }
 
 function produceProcess() {
@@ -76,8 +82,7 @@ function produceProcess() {
   nrempty--;
   nrfull++;
   percent = (nrfull/bufferSize)*100;
-  moveProgressBar();
-  moveProgressBarForEmpty();
+  updateProgressBar();
 }
 
 function consumeProcess() {
@@ -87,20 +92,18 @@ function consumeProcess() {
   nrempty++;
   nrfull--;
   percent = (nrfull/bufferSize)*100;
-  moveProgressBar();
-  moveProgressBarForEmpty();
+  updateProgressBar();
 }
 
 async function produce() {
   if (mutexP === 1) {
     lockMutexP();
-    await sleep(500);
     if (nrempty !== 0) {
       if (criticalSection[outIndex-1] !== 0) {
         logToConsole("Producer start producing");
         criticalSection[inIndex] = 0;
         produceProcess();
-        await sleep(2000);
+        await sleep(5000);
         criticalSection[inIndex-1] = 1;
         logToConsole("Producer finish producing");
         unlockMutexP();
@@ -120,13 +123,12 @@ async function produce() {
 async function consume() {
   if (mutexC === 1) {
     lockMutexC();
-    await sleep(500);
     if (nrfull !== 0) {
       if (criticalSection[inIndex-1] !== 0) {
         logToConsole("Consumer start consuming");
         criticalSection[outIndex] = 0;
         consumeProcess();
-        await sleep(2000);
+        await sleep(5000);
         criticalSection[outIndex-1] = 1;
         logToConsole("Consumer finish consuming");
         unlockMutexC();
@@ -166,10 +168,6 @@ function logToConsole(message) {
   for (const entry of logEntries) {
     entry.style.animationName = "fadeOut";
   }
-
-  // setTimeout(function() {
-  //   logElement.innerHTML = ""; // 로그 요소 삭제
-  // }, 2000); // 2초 후에 로그를 삭제
 }
 
 function updateBufferInfo() {
@@ -181,7 +179,8 @@ function updateBufferInfo() {
 function updateQueueImage() {
     var val = parseInt(percent);
     var $circle = $('#svg #bar');
-    
+    var $circle2 = $('#svg #bar2');
+
     if (isNaN(val)) {
      val = 100; 
     }
@@ -192,9 +191,11 @@ function updateQueueImage() {
       if (val < 0) { val = 0;}
       if (val > 100) { val = 100;}
       
-      var pct = ((100-val)/100)*c;
-      
+      var pct = ((100+percent)/100)*c;
+      var pct2 = ((100-((nrfull)*100/bufferSize))/100)*c;
+
       $circle.css({ strokeDashoffset: pct});
+      $circle2.css({ strokeDashoffset: pct2});
       
       $('#cont').attr('data-pct',val);
     }
@@ -209,68 +210,70 @@ moveProgressBar();
 moveProgressBarForEmpty();
 moveProgressBarForMutexP();
 moveProgressBarForMutexC();
-// on browser resize...
+moveProgressBarForIn();
+moveProgressBarForOut();
 $(window).resize(function() {
     moveProgressBar();
 });
 
-// SIGNATURE PROGRESS
 function moveProgressBar() {
     var getPercent = percent/100;
-    // var getProgressWrapWidth = $('.progress-wrap').width();
     var getProgressWrapWidth = $('.progress-wrap').width();
     var progressTotal = getPercent * getProgressWrapWidth;
     var animationLength = 1000;
-    logToConsole(progressTotal);
-    // on page load, animate percentage bar to data percentage length
-    // .stop() used to prevent animation queueing
     $('.progress-bar').stop().animate({
         left: progressTotal
     }, animationLength);
 }
 
-// SIGNATURE PROGRESS
 function moveProgressBarForEmpty() {
   var getPercent = (100-percent)/100;
-  // var getProgressWrapWidth = $('.progress-wrap').width();
   var getProgressWrapWidth = $('.progress-wrap2').width();
   var progressTotal = getPercent * getProgressWrapWidth;
   var animationLength = 1000;
-
-  logToConsole(progressTotal);
-  // on page load, animate percentage bar to data percentage length
-  // .stop() used to prevent animation queueing
   $('.progress-bar2').stop().animate({
       left: progressTotal
   }, animationLength);
 }
 
-// SIGNATURE PROGRESS
 function moveProgressBarForMutexP() {
   var getPercent = mutexP;
   var getProgressWrapWidth = $('.progress-wrap3').width();
   var progressTotal = getPercent * getProgressWrapWidth;
   var animationLength = 1000;
-
-  logToConsole(progressTotal);
-  // on page load, animate percentage bar to data percentage length
-  // .stop() used to prevent animation queueing
   $('.progress-bar3').stop().animate({
       left: progressTotal
   }, animationLength);
 }
 
-// SIGNATURE PROGRESS
 function moveProgressBarForMutexC() {
   var getPercent = mutexC;
   var getProgressWrapWidth = $('.progress-wrap4').width();
   var progressTotal = getPercent * getProgressWrapWidth;
   var animationLength = 1000;
-
-  logToConsole(progressTotal);
-  // on page load, animate percentage bar to data percentage length
-  // .stop() used to prevent animation queueing
   $('.progress-bar4').stop().animate({
+      left: progressTotal
+  }, animationLength);
+}
+
+function moveProgressBarForIn() {
+  var getPercent = (inIndex/bufferSize);
+  logToConsole(getPercent);
+  var getProgressWrapWidth = $('.progress-wrap5').width();
+  var progressTotal = getPercent * getProgressWrapWidth;
+  var animationLength = 1000;
+  $('.progress-bar5').stop().animate({
+      left: progressTotal
+  }, animationLength);
+}
+
+function moveProgressBarForOut() {
+  var getPercent = (outIndex/bufferSize);
+  logToConsole(getPercent);
+  var getProgressWrapWidth = $('.progress-wrap6').width();
+  var progressTotal = getPercent * getProgressWrapWidth;
+  var animationLength = 1000;
+  $('.progress-bar6').stop().animate({
       left: progressTotal
   }, animationLength);
 }

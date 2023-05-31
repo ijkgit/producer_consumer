@@ -20,33 +20,54 @@
 
   <div id="cont" data-pct="0">
     <svg id="svg" width="200" height="200" viewPort="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <circle r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
+      <circle id="bar2" r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0"></circle>
       <circle id="bar" r="90" cx="100" cy="100" fill="transparent" stroke-dasharray="565.48" stroke-dashoffset="0">
       </circle>
     </svg>
   </div>
   <br>
+  <div class="half-box">
+  <div id="in-info"></div>
+  <div class="progress-wrap5 progress5" data-progress-percent="0">
+    <div class="progress-bar5 progress5"></div>
+  </div>
+</div>  
 
+<div class="half-box">
+  <div id="out-info"></div>
+  <div class="progress-wrap6 progress6" data-progress-percent="0">
+    <div class="progress-bar6 progress6"></div>
+  </div>
+</div>
+<div class="half-box">
   <div id="mutexP-info"></div>
   <div class="progress-wrap3 progress3" data-progress-percent="0">
     <div class="progress-bar3 progress3"></div>
   </div>
+</div>
 
+<div class="half-box">
   <div id="mutexC-info"></div>
   <div class="progress-wrap4 progress4" data-progress-percent="0">
     <div class="progress-bar4 progress4"></div>
   </div>
+</div>
 
+<div class="half-box">
   <div id="nrfull-info"></div>
   <div class="progress-wrap progress" data-progress-percent="0">
     <div class="progress-bar progress"></div>
   </div>
+</div>
 
+<div class="half-box">
   <div id="nrempty-info"></div>
   <div class="progress-wrap2 progress2" data-progress-percent="0">
     <div class="progress-bar2 progress2"></div>
   </div>
-
+</div>
+  
+  <br>
   <label for="buffer-size">Buffer Size:</label>
   <input id="buffer-size" type="number" placeholder="Enter buffer size">
   <button id="start-btn" onclick="startProducerConsumer()">Start</button>
@@ -54,8 +75,7 @@
   <button id="produce-btn" onclick="produce()">Produce</button>
   <button id="consume-btn" onclick="consume()">Consume</button>
   <div id="buffer-info"></div>
-  <div id="in-info"></div>
-  <div id="out-info"></div>
+
   
 
 

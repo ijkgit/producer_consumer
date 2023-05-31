@@ -6,9 +6,14 @@
   stroke: #666;
   stroke-width: 1em;
 }
+
 #svg #bar {
   stroke: #FF9F1E;
 }
+#svg #bar2 {
+  stroke: #666;
+}
+
 #cont {
   display: block;
   height: 200px;
@@ -123,4 +128,44 @@ input { border: 1px solid #666; background: #333; color: #fff; padding: 0.5em; b
     position: absolute;
     top: 0;
   }
+}
+
+.progress5 {
+  width: 100%;
+  height: 30px;
+}
+.progress-wrap5 {
+  background: #FF9F1E;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+  .progress-bar5 {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.progress6 {
+  width: 100%;
+  height: 30px;
+}
+.progress-wrap6 {
+  background: #FF9F1E;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+  .progress-bar6 {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+}
+
+.half-box {
+  width:45%;
+  margin: 0 auto;
+  display: inline-block;
 }
