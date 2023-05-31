@@ -7,6 +7,7 @@ let mutexC = 1; // 소비자 뮤텍스
 let nrfull = 0; // 버퍼가 가득 찬 횟수
 let nrempty = bufferSize; // 버퍼가 비어있는 횟수
 let criticalSection = [];
+let percent = 0;
 const MAX_LOG_LINES = 2; // 최대 표시할 로그 줄 수
 const logLines = []; // 로그 줄을 저장할 배열
 
@@ -18,6 +19,7 @@ setInterval(() => {
   // 상태 확인 및 업데이트하는 코드 작성
   updateVariableInfo();
   updateBufferInfo();
+  updateQueueImage();
 }, 1);
 
 function startProducerConsumer() {
@@ -28,8 +30,6 @@ function startProducerConsumer() {
   nrfull = 0;
   inIndex = 0;
   outIndex = 0;
-  updateVariableInfo();
-  updateBufferInfo();
 }
 
 function updateVariableInfo() {
@@ -65,6 +65,7 @@ function produceProcess() {
   inIndex = (inIndex + 1) % bufferSize;
   nrempty--;
   nrfull++;
+  percent = (nrfull/bufferSize)*100;
 }
 
 function consumeProcess() {
@@ -73,6 +74,7 @@ function consumeProcess() {
   outIndex = (outIndex + 1) % bufferSize;
   nrempty++;
   nrfull--;
+  percent = (nrfull/bufferSize)*100;
 }
 
 async function produce() {
@@ -161,4 +163,24 @@ function updateBufferInfo() {
   bufferBox.innerHTML = `Buffer: [${items.join(", ")}]`;
 }
 
-updateVariableInfo();
+function updateQueueImage() {
+    var val = percent;
+    var $circle = $('#svg #bar');
+    
+    if (isNaN(val)) {
+     val = 100; 
+    }
+    else{
+      var r = $circle.attr('r');
+      var c = Math.PI*(r*2);
+     
+      if (val < 0) { val = 0;}
+      if (val > 100) { val = 100;}
+      
+      var pct = ((100-val)/100)*c;
+      
+      $circle.css({ strokeDashoffset: pct});
+      
+      $('#cont').attr('data-pct',val);
+    }
+}
