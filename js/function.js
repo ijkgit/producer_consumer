@@ -6,17 +6,23 @@ let mutexP = 1; // 생산자 뮤텍스
 let mutexC = 1; // 소비자 뮤텍스
 let nrfull = 0; // 버퍼가 가득 찬 횟수
 let nrempty = bufferSize; // 버퍼가 비어있는 횟수
+let criticalSection = [];
 const MAX_LOG_LINES = 2; // 최대 표시할 로그 줄 수
 const logLines = []; // 로그 줄을 저장할 배열
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 setInterval(() => {
   // 상태 확인 및 업데이트하는 코드 작성
   updateVariableInfo();
   updateBufferInfo();
-}, 100); // 1초마다 실행
+}, 1);
 
 function startProducerConsumer() {
   bufferSize = parseInt(document.getElementById("buffer-size").value);
+  criticalSection = new Array(bufferSize).fill(undefined);
   buffer = new Array(bufferSize).fill(undefined);
   nrempty = bufferSize;
   nrfull = 0;
@@ -36,68 +42,89 @@ function updateVariableInfo() {
   document.getElementById("nrempty-info").innerText = `Nrempty: ${nrempty}`;
 }
 
-function produce() {
-  if (mutexC === 1 && mutexP === 1 && nrempty !== 0) {
-    mutexP = 0;
-    logToConsole("Producer mutex locked");
-    logToConsole("Producer is producing..");
-
-    // 생산자 작업 수행
-    const item = Math.floor(Math.random() * 100); // 임의의 값을 생성
-    buffer[inIndex] = item;
-    inIndex = (inIndex + 1) % bufferSize;
-    nrempty--;
-    nrfull++;
-
-    setTimeout(() => {
-      mutexP = 1;
-      logToConsole("Producer mutex unlocked");
-      logToConsole("Producer mutex re-enabled");
-    }, 2000); // 1초 후 생산자 뮤텍스 재활성화
-  } else if(mutexP == 0) {
-    logToConsole("Producer is producing.. You should wait to produce!");
-  } else if(mutexC == 0) {
-    logToConsole("Consumer is consuming.. You should wait to produce!");
-  } else {
-    logToConsole("Buffer is full.. You should wait to produce!");
-  }
-
-  updateVariableInfo();
-  updateBufferInfo();
+function lockMutexP() {
+  mutexP = 0;
+  logToConsole("Producer mutex locked");
 }
 
-
-
-function consume() {
-  if (mutexP === 1 && mutexC === 1 && nrfull !== 0) {
-    mutexC = 0;
-    logToConsole("Consumer mutex locked");
-    logToConsole("Consumer is consuming..");
-
-    // 소비자 작업 수행
-    const item = buffer[outIndex];
-    buffer[outIndex] = undefined;
-    outIndex = (outIndex + 1) % bufferSize;
-    nrempty++;
-    nrfull--;
-
-    setTimeout(() => {
-      mutexC = 1;
-      logToConsole("Consumer mutex unlocked");
-      logToConsole("Consumer mutex re-enabled");
-    }, 2000); // 1초 후 소비자 뮤텍스 재활성화
-  } else if(mutexP == 0) {
-    logToConsole("Producer is producing.. You should wait to consume!");
-  } else if(mutexC == 0) {
-    logToConsole("Consumer is consuming.. You should wait to consume!");
-  } else {
-    logToConsole("Buffer is full.. You should wait to consume!");
-  }
-
-  updateVariableInfo();
-  updateBufferInfo();
+function unlockMutexP() {
+  mutexP = 1;
 }
 
+function lockMutexC() {
+  mutexC = 0;
+}
+
+function unlockMutexC() {
+  mutexC = 1;
+}
+
+function produceProcess() {
+  const item = Math.floor(Math.random() * 100); // 임의의 값을 생성
+  buffer[inIndex] = item;
+  inIndex = (inIndex + 1) % bufferSize;
+  nrempty--;
+  nrfull++;
+}
+
+function consumeProcess() {
+  const item = buffer[outIndex];
+  buffer[outIndex] = undefined;
+  outIndex = (outIndex + 1) % bufferSize;
+  nrempty++;
+  nrfull--;
+}
+
+async function produce() {
+  if (mutexP === 1) {
+    lockMutexP();
+    if (nrempty !== 0) {
+      if (criticalSection[outIndex-1] !== 0) {
+        logToConsole("Producer start producing");
+        criticalSection[inIndex] = 0;
+        produceProcess();
+        await sleep(2000);
+        criticalSection[inIndex-1] = 1;
+        logToConsole("Producer finish producing");
+        unlockMutexP();
+      } else {
+        logToConsole("Consumer is consuming what you want to produce.");
+        unlockMutexP();
+      }
+    } else {
+      logToConsole("Buffer is full.");
+      unlockMutexP();
+    }
+  } else {
+    logToConsole("Another Producer is producing..");
+  }
+}
+
+async function consume() {
+  if (mutexC === 1) {
+    lockMutexC();
+    await sleep(500);
+    if (nrfull !== 0) {
+      if (criticalSection[inIndex-1] !== 0) {
+        logToConsole("Consumer start consuming");
+        criticalSection[outIndex] = 0;
+        consumeProcess();
+        await sleep(2000);
+        criticalSection[outIndex-1] = 1;
+        logToConsole("Consumer finish consuming");
+        unlockMutexC();
+      } else {
+        logToConsole("Producer is producing what you want to consume.");
+        unlockMutexC();
+      }
+    } else {
+      logToConsole("Buffer is empty.");
+      unlockMutexC();
+    }
+  } else {
+    logToConsole("Another Consumer is consuming");
+  }
+}
 function logToConsole(message) {
   logLines.push(message); // 로그 줄 추가
 
