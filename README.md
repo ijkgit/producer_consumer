@@ -22,4 +22,4 @@ The core part of the producer-consumer problem, including the logic, can be foun
 
 The remaining code is related to the UI. 
 
-** Please note ** that there is a bug where the output is not displayed correctly after the buffer completes one cycle. ** This is an area for future improvement. I hope this clarifies the details.
+<mark>**Please note that there is a bug where the output is not displayed correctly after the buffer completes one cycle.**</mark> This is an area for future improvement. I hope this clarifies the details.
