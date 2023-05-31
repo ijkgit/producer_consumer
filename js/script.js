@@ -207,7 +207,7 @@ function updateQueueImage() {
       // if(pct > 1130) pct -= 565;
       // if(pct2 > 1130) pct2 -= 565;
 
-      logToConsole(((100+circularOutIndex*100/bufferSize)/100));
+      // logToConsole(((100+circularOutIndex*100/bufferSize)/100));
       
       $circle.css({ strokeDashoffset: pct});
       $circle2.css({ strokeDashoffset: pct2});
