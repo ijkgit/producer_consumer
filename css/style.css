@@ -1,3 +1,5 @@
+@import "compass/css3";
+
 #svg circle {
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear;
@@ -51,4 +53,23 @@ input { border: 1px solid #666; background: #333; color: #fff; padding: 0.5em; b
   margin-bottom: 10px;
   max-height: 200px;
   overflow-y: scroll;
+}
+
+@import "compass/css3";
+
+.progress {
+  width: 100%;
+  height: 30px;
+}
+.progress-wrap {
+  background: #f80;
+  margin: 20px 0;
+  overflow: hidden;
+  position: relative;
+  .progress-bar {
+    background: #ddd;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
 }
