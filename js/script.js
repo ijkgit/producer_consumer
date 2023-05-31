@@ -66,6 +66,8 @@ function produceProcess() {
   nrempty--;
   nrfull++;
   percent = (nrfull/bufferSize)*100;
+  moveProgressBar();
+  moveProgressBarForEmpty();
 }
 
 function consumeProcess() {
@@ -75,6 +77,8 @@ function consumeProcess() {
   nrempty++;
   nrfull--;
   percent = (nrfull/bufferSize)*100;
+  moveProgressBar();
+  moveProgressBarForEmpty();
 }
 
 async function produce() {
@@ -165,7 +169,7 @@ function updateBufferInfo() {
 }
 
 function updateQueueImage() {
-    var val = percent;
+    var val = parseInt(percent);
     var $circle = $('#svg #bar');
     
     if (isNaN(val)) {
@@ -195,15 +199,32 @@ $(window).resize(function() {
 
 // SIGNATURE PROGRESS
 function moveProgressBar() {
-  console.log("moveProgressBar");
-    var getPercent = (100 / 100);
+    var getPercent = percent/100;
+    // var getProgressWrapWidth = $('.progress-wrap').width();
     var getProgressWrapWidth = $('.progress-wrap').width();
     var progressTotal = getPercent * getProgressWrapWidth;
-    var animationLength = 2500;
-    
+    var animationLength = 1000;
+    logToConsole(progressTotal);
+    logToConsole(getPercent);
     // on page load, animate percentage bar to data percentage length
     // .stop() used to prevent animation queueing
     $('.progress-bar').stop().animate({
         left: progressTotal
     }, animationLength);
+}
+
+// SIGNATURE PROGRESS
+function moveProgressBarForEmpty() {
+  var getPercent = (100-percent)/100;
+  // var getProgressWrapWidth = $('.progress-wrap').width();
+  var getProgressWrapWidth = $('.progress-wrap').width();
+  var progressTotal = getPercent * getProgressWrapWidth;
+  var animationLength = 1000;
+  logToConsole(progressTotal);
+  logToConsole(getPercent);
+  // on page load, animate percentage bar to data percentage length
+  // .stop() used to prevent animation queueing
+  $('.progress-bar').stop().animate({
+      left: progressTotal
+  }, animationLength);
 }
