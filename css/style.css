@@ -3,7 +3,7 @@
 #svg circle {
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear;
-  stroke: #666;
+  stroke: rgba(255, 255, 255, 0);
   stroke-width: 1em;
 }
 
@@ -12,6 +12,9 @@
 }
 #svg #bar2 {
   stroke: #666;
+}
+#svg #bar3 {
+  stroke: #666 !important;
 }
 
 #cont {
@@ -23,6 +26,7 @@
   border-radius: 100%;
   position: relative;
 }
+
 #cont:after {
   position: absolute;
   display: block;

@@ -191,8 +191,8 @@ function updateQueueImage() {
       if (val < 0) { val = 0;}
       if (val > 100) { val = 100;}
       
-      var pct = ((100+percent)/100)*c;
-      var pct2 = ((100-((nrfull)*100/bufferSize))/100)*c;
+      var pct = ((100+inIndex*100/bufferSize)/100)*c;
+      var pct2 = ((100+outIndex*100/bufferSize)/100)*c;
 
       $circle.css({ strokeDashoffset: pct});
       $circle2.css({ strokeDashoffset: pct2});
