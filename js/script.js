@@ -8,8 +8,16 @@ let nrfull = 0; // 버퍼가 가득 찬 횟수
 let nrempty = bufferSize; // 버퍼가 비어있는 횟수
 let criticalSection = [];
 let percent = 0;
+let count = 0;
 const MAX_LOG_LINES = 1; // 최대 표시할 로그 줄 수
 const logLines = []; // 로그 줄을 저장할 배열
+let circularInIndex = 0;
+let circularOutIndex = 0;
+
+function cnt() {
+  count++;
+  return count;
+}
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -76,9 +84,11 @@ function unlockMutexC() {
 }
 
 function produceProcess() {
-  const item = Math.floor(Math.random() * 100); // 임의의 값을 생성
+  // const item = Math.floor(Math.random() * 100); // 임의의 값을 생성
+  const item = cnt();
   buffer[inIndex] = item;
   inIndex = (inIndex + 1) % bufferSize;
+  circularInIndex++;
   nrempty--;
   nrfull++;
   percent = (nrfull/bufferSize)*100;
@@ -89,6 +99,7 @@ function consumeProcess() {
   const item = buffer[outIndex];
   buffer[outIndex] = undefined;
   outIndex = (outIndex + 1) % bufferSize;
+  circularOutIndex++;
   nrempty++;
   nrfull--;
   percent = (nrfull/bufferSize)*100;
@@ -103,7 +114,7 @@ async function produce() {
         logToConsole("Producer start producing");
         criticalSection[inIndex] = 0;
         produceProcess();
-        await sleep(5000);
+        await sleep(3000);
         criticalSection[inIndex-1] = 1;
         logToConsole("Producer finish producing");
         unlockMutexP();
@@ -128,7 +139,7 @@ async function consume() {
         logToConsole("Consumer start consuming");
         criticalSection[outIndex] = 0;
         consumeProcess();
-        await sleep(5000);
+        await sleep(3000);
         criticalSection[outIndex-1] = 1;
         logToConsole("Consumer finish consuming");
         unlockMutexC();
@@ -191,9 +202,13 @@ function updateQueueImage() {
       if (val < 0) { val = 0;}
       if (val > 100) { val = 100;}
       
-      var pct = ((100+inIndex*100/bufferSize)/100)*c;
-      var pct2 = ((100+outIndex*100/bufferSize)/100)*c;
+      var pct = ((100+circularInIndex*100/bufferSize)/100)*c;
+      var pct2 = ((100+circularOutIndex*100/bufferSize)/100)*c;
+      // if(pct > 1130) pct -= 565;
+      // if(pct2 > 1130) pct2 -= 565;
 
+      logToConsole(((100+circularOutIndex*100/bufferSize)/100));
+      
       $circle.css({ strokeDashoffset: pct});
       $circle2.css({ strokeDashoffset: pct2});
       
@@ -258,7 +273,6 @@ function moveProgressBarForMutexC() {
 
 function moveProgressBarForIn() {
   var getPercent = (inIndex/bufferSize);
-  logToConsole(getPercent);
   var getProgressWrapWidth = $('.progress-wrap5').width();
   var progressTotal = getPercent * getProgressWrapWidth;
   var animationLength = 1000;
@@ -269,7 +283,6 @@ function moveProgressBarForIn() {
 
 function moveProgressBarForOut() {
   var getPercent = (outIndex/bufferSize);
-  logToConsole(getPercent);
   var getProgressWrapWidth = $('.progress-wrap6').width();
   var progressTotal = getPercent * getProgressWrapWidth;
   var animationLength = 1000;
