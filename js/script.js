@@ -32,7 +32,7 @@ setInterval(() => {
 
 function startProducerConsumer() {
   bufferSize = parseInt(document.getElementById("buffer-size").value);
-  criticalSection = new Array(bufferSize).fill(undefined);
+  criticalSection = new Array(bufferSize).fill(1);
   buffer = new Array(bufferSize).fill(undefined);
   nrempty = bufferSize;
   nrfull = 0;
@@ -110,11 +110,12 @@ async function produce() {
   if (mutexP === 1) {
     lockMutexP();
     if (nrempty !== 0) {
-      if (criticalSection[outIndex-1] !== 0) {
+      if (criticalSection[outIndex] !== 0) {
         logToConsole("Producer start producing");
-        criticalSection[inIndex] = 0;
+        criticalSection[inIndex-1] = 0;
+        await sleep(1500);
         produceProcess();
-        await sleep(3000);
+        await sleep(1500);
         criticalSection[inIndex-1] = 1;
         logToConsole("Producer finish producing");
         unlockMutexP();
@@ -138,8 +139,8 @@ async function consume() {
       if (criticalSection[inIndex-1] !== 0) {
         logToConsole("Consumer start consuming");
         criticalSection[outIndex] = 0;
-        consumeProcess();
         await sleep(3000);
+        consumeProcess();
         criticalSection[outIndex-1] = 1;
         logToConsole("Consumer finish consuming");
         unlockMutexC();
